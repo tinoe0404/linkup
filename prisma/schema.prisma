@@ -84,3 +84,16 @@ model Like {
   @@index([userId,postId]) // composite index for faster queries
   @@unique([userId,postId]) // this prevents same user liking post twice
 }
+
+model Follows{
+  followerId String
+  followingId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@index([followerId,followingId]) // composite index for faster queries
+  @@id([followerId, followingId]) // composite primary key prevents duplicate follows
+}
