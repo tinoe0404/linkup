@@ -7,6 +7,8 @@ import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import { Textarea } from './ui/textarea';
 import { ImageIcon, Loader2Icon, SendIcon } from 'lucide-react';
 import { Button } from './ui/button';
+import { createPost } from '@/actions/post.action';
+import { toast } from 'react-toastify';
 
 function CreatePost() {
     const { user } = useUser();
@@ -19,17 +21,19 @@ function CreatePost() {
         if (!content.trim() && !imageUrl) return;
 
         setIsPosting(true);
-    try {
-      const result = await createPost(content, imageUrl);
-      if (result?.success) {
-        // reset the form
-        setContent("");
-        setImageUrl("");
-        setShowImageUpload(false);
+  
 
-        toast.success("Post created successfully");
-      }
-    } catch (error) {
+            try {
+                const result = await createPost(content, imageUrl);
+                if (result?.success) {
+                    // reset the form
+                    setContent("");
+                    setImageUrl("");
+                    setShowImageUpload(false);
+
+                    toast.success("Post created successfully");
+                }
+            } catch (error) {
       console.error("Failed to create post:", error);
       toast.error("Failed to create post");
     } finally {
