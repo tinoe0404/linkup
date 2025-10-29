@@ -8,7 +8,7 @@ import { Textarea } from './ui/textarea';
 import { ImageIcon, Loader2Icon, SendIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import { createPost } from '@/actions/post.action';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 function CreatePost() {
     const { user } = useUser();
@@ -21,8 +21,6 @@ function CreatePost() {
         if (!content.trim() && !imageUrl) return;
 
         setIsPosting(true);
-  
-
             try {
                 const result = await createPost(content, imageUrl);
                 if (result?.success) {
