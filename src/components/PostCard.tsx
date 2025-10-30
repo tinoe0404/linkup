@@ -26,7 +26,23 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
   const [optimisticLikes, setOptmisticLikes] = useState(post._count.likes);
   const [showComments, setShowComments] = useState(false);
 
+  const handleLike = async () => {
+    if (isLiking) return;
+    try {
+      setIsLiking(true);
+      setHasLiked((prev) => !prev);
+      setOptmisticLikes((prev) => prev + (hasLiked ? -1 : 1));
+      await toggleLike(post.id);
+    } catch (error) {
+      setOptmisticLikes(post._count.likes);
+      setHasLiked(post.likes.some((like) => like.userId === dbUserId));
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
   return (
+    
     
   );
 }
