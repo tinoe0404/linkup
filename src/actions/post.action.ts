@@ -75,7 +75,7 @@ export async function getPosts() {
     console.log("Error in getPosts", error);
     throw new Error("Failed to fetch posts");
   }
-} 
+}
 
 export async function toggleLike(postId: string) {
   try {
