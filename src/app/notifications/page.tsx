@@ -5,7 +5,7 @@ import { NotificationsSkeleton } from "@/components/NotificationSkeleton";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 import { HeartIcon, MessageCircleIcon, UserPlusIcon } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -78,6 +78,7 @@ function NotificationsPage() {
                   <Avatar className="mt-1">
                     <AvatarImage src={notification.creator.image ?? "/avatar.png"} />
                   </Avatar>
+
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
                       {getNotificationIcon(notification.type)}
@@ -116,7 +117,9 @@ function NotificationsPage() {
                       )}
 
                     <p className="text-sm text-muted-foreground pl-6">
-                      {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                      {formatDistance(new Date(notification.createdAt), new Date(), {
+                        addSuffix: true,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -128,4 +131,5 @@ function NotificationsPage() {
     </div>
   );
 }
+
 export default NotificationsPage;
