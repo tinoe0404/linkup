@@ -14,7 +14,7 @@ import ImageUpload from "./ImageUpload";
 function CreatePost() {
   const { user } = useUser();
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [isPosting, setIsPosting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
 
@@ -23,19 +23,20 @@ function CreatePost() {
 
     setIsPosting(true);
     try {
-      const result = await createPost(content.trim(), imageUrl ?? "");
-
+      const result = await createPost(content, imageUrl);
       if (result?.success) {
+        // reset the form
         setContent("");
-        setImageUrl(null);
+        setImageUrl("");
         setShowImageUpload(false);
+
         toast.success("Post created successfully");
       } else {
-        toast.error(result?.message || "Failed to create post");
+        toast.error(result?.error || "Failed to create post");
       }
     } catch (error) {
       console.error("Failed to create post:", error);
-      toast.error("Something went wrong");
+      toast.error("Failed to create post");
     } finally {
       setIsPosting(false);
     }
@@ -45,11 +46,11 @@ function CreatePost() {
     <Card className="mb-6">
       <CardContent className="pt-6">
         <div className="space-y-4">
+          {/* Avatar + Textarea */}
           <div className="flex space-x-4">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={user?.imageUrl ?? "/avatar.png"} />
+              <AvatarImage src={user?.imageUrl || "/avatar.png"} />
             </Avatar>
-
             <Textarea
               placeholder="What's on your mind?"
               className="min-h-[100px] resize-none border-none focus-visible:ring-0 p-0 text-base"
@@ -59,21 +60,22 @@ function CreatePost() {
             />
           </div>
 
+          {/* Image Upload */}
           {(showImageUpload || imageUrl) && (
             <div className="border rounded-lg p-4">
               <ImageUpload
-                endpoint="postImage"
-                value={imageUrl ?? ""}
-                onChange={(file) => {
-                  console.log("UPLOAD RESULT:", file);
-                  const url = typeof file === "string" ? file : file?.url;
-                  setImageUrl(url || null);
+                endpoint="imageUploader" // ✅ fixed endpoint name
+                value={imageUrl}
+                onChange={(url) => {
+                  console.log("Image uploaded:", url); // debug log
+                  setImageUrl(url);
                   if (!url) setShowImageUpload(false);
                 }}
               />
             </div>
           )}
 
+          {/* Actions */}
           <div className="flex items-center justify-between border-t pt-4">
             <div className="flex space-x-2">
               <Button
@@ -81,7 +83,7 @@ function CreatePost() {
                 variant="ghost"
                 size="sm"
                 className="text-muted-foreground hover:text-primary"
-                onClick={() => setShowImageUpload((prev) => !prev)}
+                onClick={() => setShowImageUpload(!showImageUpload)}
                 disabled={isPosting}
               >
                 <ImageIcon className="size-4 mr-2" />

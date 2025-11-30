@@ -1,39 +1,60 @@
 "use client";
 
-import { UploadDropzone } from "@/lib/uploadthing";
-import { XIcon } from "lucide-react";
+import { UploadDropzone } from "../lib/uploadthing"; // adjusted the path to the correct location
+import { useEffect } from "react";
 
 interface ImageUploadProps {
+  endpoint: "imageUploader";
+  value?: string;
   onChange: (url: string) => void;
-  value: string;
-  endpoint: "postImage";
 }
 
-function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
-  if (value) {
-    return (
-      <div className="relative size-40">
-        <img src={value} alt="Upload" className="rounded-md size-40 object-cover" />
-        <button
-          onClick={() => onChange("")}
-          className="absolute top-0 right-0 p-1 bg-red-500 rounded-full shadow-sm"
-          type="button"
-        >
-          <XIcon className="h-4 w-4 text-white" />
-        </button>
-      </div>
-    );
-  }
+const ImageUpload = ({ endpoint, value, onChange }: ImageUploadProps) => {
+  // If an image is already selected, show it
+  useEffect(() => {
+    if (value) {
+      console.log("Current image URL:", value);
+    }
+  }, [value]);
+
   return (
-    <UploadDropzone
-      endpoint={endpoint}
-      onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
-      }}
-      onUploadError={(error: Error) => {
-        console.log(error);
-      }}
-    />
+    <div className="space-y-2">
+      {!value ? (
+        <UploadDropzone
+          endpoint={endpoint}
+          onClientUploadComplete={(res) => {
+            console.log("Upload complete response:", res);
+            const uploadedUrl = res?.[0]?.url;
+            if (uploadedUrl) {
+              onChange(uploadedUrl);
+            } else {
+              console.error("UploadThing: No URL returned from upload result", res);
+            }
+          }}
+          
+          onUploadError={(error: Error) => {
+            console.error("Upload error:", error);
+            alert("Upload failed: " + error.message);
+          }}
+        />
+      ) : (
+        <div className="relative">
+          <img
+            src={value}
+            alt="Uploaded image"
+            className="w-full rounded-lg object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 text-xs rounded"
+          >
+            Remove
+          </button>
+        </div>
+      )}
+    </div>
   );
-}
+};
+
 export default ImageUpload;
